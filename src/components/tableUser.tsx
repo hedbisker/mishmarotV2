@@ -51,8 +51,6 @@ const TableUser: React.FC = () => {
             }
             
             const response = await updateBooking(key, quantityForChange)
-            
-            console.log(response.data);
     
             if(response.data.code != 200){
                 return {code:response.data.code,"msg":response.data.message}

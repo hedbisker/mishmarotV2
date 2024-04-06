@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import TableUser from  './tableUser.tsx'
 import TableBook from  './tableBook.tsx'
 import { login, logout } from '../services/apiService.ts';
-
-
+import Logout from './logout.tsx'
 
 const App: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -28,28 +27,13 @@ const App: React.FC = () => {
     }
   };
 
-
-  const Logout = async () => {
-    try {
-       
-      const response = await logout();
-        if(response.data.code != 200){
-            setError(response.data.message);
-            return;
-        }
-        setLoggedIn(false);
-    } catch (error) {
-        console.log(error);
-    }
-  };
-
   return (
     <div>
     {loggedIn ? 
     (
     <div>
         <label>{username} : שלום</label><br></br>
-        <button onClick={Logout}>התנתק</button>
+        <Logout loggedInChange={setLoggedIn}/>
         <br></br><br></br>
           <TableUser/>
           <TableBook/>
