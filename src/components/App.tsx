@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import Login from './login.tsx';
 import Logout from './logout.tsx';
-import TableUser from './tableUser.tsx';
-import TableBook from './tableBook.tsx';
 import TableMain from './tableMain.tsx'
 const App: React.FC = () => {
   const [username, setUsername] = useState('');

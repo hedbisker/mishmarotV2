@@ -1,62 +1,44 @@
 import React, { useState } from 'react';
 import {updateBooking  } from '../services/apiService.ts';
-import { createUserTable, createBookTable } from '../common/common.ts';
-import  TableData  from '../models/TableData.ts'
+import { createTableData } from '../common/common.ts';
+import { PrefixTableNames } from '../models/globalNames.ts';
+import tableValidation from '../services/validationService.ts'
 
 
 const TableUser: React.FC = ({tableDataUser,setTableDataUser, updateTableDataBook}) => {
     const [errorUserTable, setErrorUserTable] = useState<string | null>(null);
-
-
-        const updateDataInParent = (updatedData: TableData[]) => {
-            updateTableDataBook(updatedData);
-          };
-
-
         const QuantityOnChangeUser = async (quantity:number,id: number, quantityForChange: number) => {
-
-        if (quantityForChange < 1 || quantityForChange > quantity) {
+          if(tableValidation.IsQuantityForChangeValid(quantityForChange,quantity)){
+            const updatedTableData = tableDataUser.map((item) =>
+              item.id === id ? { ...item, quantityForChange } : item
+            );
+            setTableDataUser(updatedTableData)
+          }else{
             setErrorUserTable('אין אפשרות להזמין את הכמות הזאת');
-            return;
           }
-       
-          console.log("quantityForChange=" + quantityForChange + " , quantity=" + quantity);
-        const updatedTableData = tableDataUser.map((item) =>
-          item.id === id ? { ... item, quantityForChange } : item
-        );
-
-        setTableDataUser(updatedTableData)
-
       };
     
     
-        const BookChangeUser = async (quantity:number,quantityForChange:number,key:string) => {
-            var response = await BookChange(quantity,quantityForChange,key);
-            if(response.code != 200){
-                setErrorUserTable(response.msg);
-            }
-            else{
-                setErrorUserTable(null);
-            }
+      const BookChangeUser = async (quantity: number, quantityForChange: number, key: string) => {
+        try {
+          if(tableValidation.IsQuantityForChangeValid(quantityForChange,quantity)){
+          const response = await updateBooking(key, quantityForChange);
+          if (response.data.code !== 200) {
+            setErrorUserTable(response.data.msg);
+          } else {
+            setErrorUserTable(null);
+          }
+          setTableDataUser(createTableData(response, PrefixTableNames.USER));
+          updateTableDataBook(createTableData(response,PrefixTableNames.BOOK));
+        }else
+        {
+          setErrorUserTable('אין אפשרות להזמין את הכמות הזאת');
         }
-    
-
-        const  BookChange = async (quantity:number,quantityForChange:number,key:string) => {
-            if (quantityForChange < 1 || quantityForChange > quantity) {
-                return {code:201,"msg":'אין אפשרות להזמין את הכמות הזאת'}
-            }
-            
-            const response = await updateBooking(key, quantityForChange)
-    
-            if(response.data.code != 200){
-                return {code:response.data.code,"msg":response.data.message}
-            }
-           
-            setTableDataUser(createBookTable(response));
-            updateDataInParent(createUserTable(response));
-
-            return {code:200,"msg":''} 
+        } catch (error) {
+          console.error("Error:", error);
         }
+      };
+
 
 
     return (

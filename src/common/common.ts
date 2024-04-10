@@ -3,58 +3,30 @@ import TableData from '../models/TableData';
 
 export const GetCarName = (sName: string) =>
 {
-     if (sName == "MAZDA_FOR_BOOK" || sName == "MAZDA_FOR_USER"){
-             return "מאזדה"
-     }
-     else if(sName == "KIA_FOR_BOOK" || sName == "KIA_FOR_USER"){
-             return "קיה"
-     }
-     else if( sName == "SHEV_FOR_BOOK" || sName == "SHEV_FOR_USER"){
-             return "שברולט"
-     }
-     else  
-     {
-         return  "דייהטסו"
-     }
+    switch (sName) {
+        case "MAZDA_FOR_BOOK":
+        case "MAZDA_FOR_USER":
+          return "מאזדה";
+        case "KIA_FOR_BOOK":
+        case "KIA_FOR_USER":
+          return "קיה";
+        case "SHEV_FOR_BOOK":
+        case "SHEV_FOR_USER":
+          return "שברולט";
+        default:
+          return "דייהטסו";
+      }
  }
  
- export const createUserTable = (response: AxiosResponse<any,any>) =>
- {
-    const UserTableTata: TableData[] = [
-        { id: 0, name: GetCarName('MAZDA_FOR_USER'),
-            key: 'MAZDA_FOR_USER', quantity: response.data.MAZDA_FOR_USER,
-            quantityForChange:1 },
-        { id: 1, name: GetCarName('KIA_FOR_USER'),
-            key: 'KIA_FOR_USER', quantity: response.data.KIA_FOR_USER,
-            quantityForChange:1 },
-        { id: 2, name: GetCarName('SHEV_FOR_USER'),
-            key: 'SHEV_FOR_USER', quantity: response.data.SHEV_FOR_USER,
-            quantityForChange:1 },
-        { id: 3, name: GetCarName('DAIH_FOR_USER'),
-            key: 'DAIH_FOR_USER', quantity: response.data.DAIH_FOR_USER,
-            quantityForChange:1 },
-      ];
-      return UserTableTata
-  }
-
- export const createBookTable = (response: AxiosResponse<any,any>) =>
- {
-    const bookTableTata: TableData[] = [
-        { id: 0, name: GetCarName('MAZDA_FOR_BOOK'),
-            key: 'MAZDA_FOR_BOOK', quantity: response.data.MAZDA_FOR_BOOK,
-            quantityForChange:1 },
-        { id: 1, name: GetCarName('KIA_FOR_BOOK'),
-            key: 'KIA_FOR_BOOK', quantity: response.data.KIA_FOR_BOOK,
-            quantityForChange:1 },
-        { id: 2, name: GetCarName('SHEV_FOR_BOOK'),
-            key: 'SHEV_FOR_BOOK', quantity: response.data.SHEV_FOR_BOOK,
-            quantityForChange:1 },
-        { id: 3, name: GetCarName('DAIH_FOR_BOOK'),
-            key: 'DAIH_FOR_BOOK', quantity: response.data.DAIH_FOR_BOOK,
-            quantityForChange:1 },
-      ];
-      return bookTableTata
-  }
+ export const createTableData = (response: AxiosResponse<any,any>, prefix: string): TableData[] => {
+    const tableData: TableData[] = [
+      { id: 0, name: GetCarName(`MAZDA_FOR_${prefix}`), key: `MAZDA_FOR_${prefix}`, quantity: response.data[`MAZDA_FOR_${prefix}`], quantityForChange: 1 },
+      { id: 1, name: GetCarName(`KIA_FOR_${prefix}`), key: `KIA_FOR_${prefix}`, quantity: response.data[`KIA_FOR_${prefix}`], quantityForChange: 1 },
+      { id: 2, name: GetCarName(`SHEV_FOR_${prefix}`), key: `SHEV_FOR_${prefix}`, quantity: response.data[`SHEV_FOR_${prefix}`], quantityForChange: 1 },
+      { id: 3, name: GetCarName(`DAIH_FOR_${prefix}`), key: `DAIH_FOR_${prefix}`, quantity: response.data[`DAIH_FOR_${prefix}`], quantityForChange: 1 },
+    ];
+    return tableData;
+  };
 
   
  
