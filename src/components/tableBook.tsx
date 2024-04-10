@@ -1,29 +1,16 @@
-import { AxiosResponse } from 'axios';
-import React, { useState, useEffect } from 'react';
-import {updateBooking ,readCars  } from '../services/apiService.ts';
-import { GetCarName } from '../common/common.ts';
-interface TableData {
-    id: number;
-    name: string;
-    key:string;
-    quantity: number;
-    quantityForChange:number
-  }
+import React, { useState } from 'react';
+import {updateBooking } from '../services/apiService.ts';
+import { createUserTable, createBookTable } from '../common/common.ts';
+import  TableData  from '../models/TableData.ts'
 
-const TableBook: React.FC = () => {
-    const [tableDataBook, setTableDataBook] = useState<TableData[]>([]);
+const TableBook: React.FC = ({ tableDataBook, setTableDataBook, updateTableDataUser }) => {
     const [errorBookTable, setErrorBookTable] = useState<string | null>(null);
 
-
-    useEffect(() => {
-        readCars().then(
-            res=>{
-                TableSetter(res);
-            })
-        });
-
-   
-      const QuantityOnChangeBook = async (quantity:number,id: number, quantityForChange: number) => {
+    const updateDataInParent = (updatedData: TableData[]) => {
+        updateTableDataUser(updatedData);
+      };
+    
+    const QuantityOnChangeBook = async (quantity:number,id: number, quantityForChange: number) => {
         if (quantityForChange < 1 || quantityForChange > quantity) {
             setErrorBookTable('אין אפשרות להזמין את הכמות הזאת');
             return;
@@ -46,6 +33,8 @@ const TableBook: React.FC = () => {
             }
         }
 
+        
+
         const  BookChange = async (quantity:number,quantityForChange:number,key:string) => {
             if (quantityForChange < 1 || quantityForChange > quantity) {
                 return {code:201,"msg":'אין אפשרות להזמין את הכמות הזאת'}
@@ -59,28 +48,12 @@ const TableBook: React.FC = () => {
                 return {code:response.data.code,"msg":response.data.message}
             }
            
-            TableSetter(response);
+            setTableDataBook(createBookTable(response));
+            updateDataInParent(createUserTable(response));
+          
             return {code:200,"msg":''} 
         }
 
-    const TableSetter = (response: AxiosResponse<any,any>) => {
-        console.log()
-        const bookTableTata: TableData[] = [
-            { id: 0, name: GetCarName('MAZDA_FOR_BOOK'),
-                key: 'MAZDA_FOR_BOOK', quantity: response.data.MAZDA_FOR_BOOK,
-                quantityForChange:1 },
-            { id: 1, name: GetCarName('KIA_FOR_BOOK'),
-                key: 'KIA_FOR_BOOK', quantity: response.data.KIA_FOR_BOOK,
-                quantityForChange:1 },
-            { id: 2, name: GetCarName('SHEV_FOR_BOOK'),
-                key: 'SHEV_FOR_BOOK', quantity: response.data.SHEV_FOR_BOOK,
-                quantityForChange:1 },
-            { id: 3, name: GetCarName('DAIH_FOR_BOOK'),
-                key: 'DAIH_FOR_BOOK', quantity: response.data.DAIH_FOR_BOOK,
-                quantityForChange:1 },
-          ];
-          setTableDataBook(bookTableTata);
-    }
 
     return (
         <div>

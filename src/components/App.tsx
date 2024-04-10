@@ -1,56 +1,46 @@
 import React, { useState } from 'react';
-import TableUser from  './tableUser.tsx'
-import TableBook from  './tableBook.tsx'
-import { login, logout } from '../services/apiService.ts';
-import Logout from './logout.tsx'
-
+import Login from './login.tsx';
+import Logout from './logout.tsx';
+import TableUser from './tableUser.tsx';
+import TableBook from './tableBook.tsx';
+import TableMain from './tableMain.tsx'
 const App: React.FC = () => {
   const [username, setUsername] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
-    const _Login = async () => {
-    try {
-        if(/^[a-zA-Z0-9א-ת]+$/.test(username) == false){
-            setError('username msut contain only alphabet or numbers');
-            return;
-        }
+  const handleLogin = (username: string) => {
+    setUsername(username);
+    setLoggedIn(true);
+    
+  };
 
-        const response = await login(username);
-        if(response.data.code != 200){
-            setError(response.data.message);
-            return;
-        }
-        setLoggedIn(true);
-    } catch (error) {
-        console.log(error);
-    }
+  const handleLogout = () => {
+    setUsername('');
+    setLoggedIn(false);
+  };
+
+  const handleError = (errorMessage: string) => {
+    setError(errorMessage);
   };
 
   return (
     <div>
-    {loggedIn ? 
-    (
-    <div>
-        <label>{username} : שלום</label><br></br>
-        <Logout loggedInChange={setLoggedIn}/>
-        <br></br><br></br>
-          <TableUser/>
-          <TableBook/>
-    </div>
-    
-
-    ):
-    (<div>
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <button onClick={_Login}>Login</button>
-    </div>)}
-    <label>{error && <p style={{ color: 'red' }}>Error: {error}</p>}</label>
+      {loggedIn ? (
+        <div>
+          <label>
+            {username} : שלום
+          </label>
+          <br />
+          <Logout loggedInChange={handleLogout} />
+          <br />
+          <br />
+         <TableMain/>
+        </div>
+      ) : (
+        <Login onLogin={handleLogin} onError={handleError} />
+      )}
+      <label>{error && <p style={{ color: 'red' }}>Error: {error}</p>}</label>
     </div>
   );
 };
